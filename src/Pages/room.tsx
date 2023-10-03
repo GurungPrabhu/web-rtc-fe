@@ -41,6 +41,7 @@ const RoomPage: React.FC = () => {
       });
 
       webSocketRef.current.addEventListener("message", (e: any) => {
+        console.log("MESSAGE RECEIVED", e.data);
         const message = JSON.parse(e.data);
         if (message.join) {
           callUser();
@@ -68,7 +69,7 @@ const RoomPage: React.FC = () => {
         }
       });
     });
-  });
+  }, []);
 
   const handleOffer = async (offer: any) => {
     console.log("OFFER RECEIVED", offer);
@@ -86,7 +87,7 @@ const RoomPage: React.FC = () => {
     await peerRef.current.setLocalDescription(answer);
 
     webSocketRef.current.send(
-      JSON.stringify({ answer: peerRef.current.Description })
+      JSON.stringify({ answer: peerRef.current.localDescription })
     );
   };
 
@@ -102,7 +103,7 @@ const RoomPage: React.FC = () => {
   const createPeer = () => {
     console.log("Creating Peer Connection");
     const peer = new RTCPeerConnection({
-      iceServers: [{ urls: "stun.stun.l.google.cm:19382" }],
+      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
     });
     peer.onnegotiationneeded = handleNegotiation;
     peer.onicecandidate = handleIceCandidateEvent;
@@ -132,6 +133,7 @@ const RoomPage: React.FC = () => {
   };
 
   const handleTrackEvent = (e: any) => {
+    console.log("HANDLE TRACK EVENT", e.streams[0]);
     partnerVideo.current.srcObject = e.streams[0];
   };
 
